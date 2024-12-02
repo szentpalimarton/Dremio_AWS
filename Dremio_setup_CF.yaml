@@ -100,37 +100,6 @@ Mappings:
       executorCount: 50
       executorDiskSize: 100
       executorMaxMemory: 122880
-  RegionMap:
-    us-east-1:
-      AMI: ami-0c02fb55956c7d316
-    us-east-2:
-      AMI: ami-0dd9f0e7df0f0a138
-    us-west-1:
-      AMI: ami-0649b28e6c9beab0d
-    us-west-2:
-      AMI: ami-0a887e401f7654935
-    ca-central-1:
-      AMI: ami-0d5d9d301c853a04a
-    eu-central-1:
-      AMI: ami-0323c3dd2da7fb37d
-    eu-west-1:
-      AMI: ami-02e136e904f3da870
-    eu-west-2:
-      AMI: ami-0ed9277fb7eb570c9
-    eu-north-1:
-      AMI: ami-0eb1f3cdeeb8eed2a
-    ap-southeast-1:
-      AMI: ami-08569b978cc4dfa10
-    ap-southeast-2:
-      AMI: ami-09b42976632b27e9b
-    ap-south-1:
-      AMI: ami-0912f71e06545ad88
-    ap-northeast-1:
-      AMI: ami-06cd52961ce9f0d85
-    ap-northeast-2:
-      AMI: ami-0a10b2721688ce9d2
-    sa-east-1:
-      AMI: ami-07b14488da8ea02a0
   SubnetConfig:
     VPC:
       CIDR: 10.0.0.0/16
@@ -233,7 +202,8 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join ["-", [!Ref "AWS::StackName", "DremioMaster"]]
-      ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", AMI]
+      ImageId:
+        'Fn::Sub': '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2}}'
       KeyName: !Ref keyName
       InstanceType: !FindInMap [ClusterSizes, !Ref clusterSize, coordinatorInstanceType]
       NetworkInterfaces:
@@ -293,7 +263,8 @@ Resources:
     DependsOn: DremioMaster
     Properties:
       AssociatePublicIpAddress: true
-      ImageId: !FindInMap [RegionMap, !Ref AWS::Region, AMI]
+      ImageId:
+        'Fn::Sub': '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2}}'
       InstanceMonitoring: true
       InstanceType: !FindInMap [ClusterSizes, !Ref clusterSize, executorInstanceType]
       KeyName: !Ref keyName
